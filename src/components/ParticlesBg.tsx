@@ -60,9 +60,9 @@ export default function ParticlesBg() {
         // Draw particle
         ctx.beginPath();
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
-        gradient.addColorStop(0, `rgba(255, 185, 35, ${p.opacity})`);
-        gradient.addColorStop(0.4, `rgba(212, 175, 55, ${p.opacity * 0.5})`);
-        gradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
+        gradient.addColorStop(0, `rgba(255, 238, 241, ${p.opacity})`);
+        gradient.addColorStop(0.4, `rgba(255, 186, 197, ${p.opacity * 0.55})`);
+        gradient.addColorStop(1, 'rgba(255, 186, 197, 0)');
         
         ctx.fillStyle = gradient;
         ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);

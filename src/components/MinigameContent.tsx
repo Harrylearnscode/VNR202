@@ -1,239 +1,151 @@
-import { useState, useEffect } from 'react';
-import { 
-  DndContext, 
-  DragOverlay, 
-  useDraggable, 
-  useDroppable,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors
-} from '@dnd-kit/core';
-import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'; 
+import { useState } from 'react';
 
-// --- KIỂU DỮ LIỆU ---
-interface EventData {
-  id: string;
-  year: string;
-  text: string;
+interface CrosswordEntry {
+  clue: string;
+  acceptedAnswers: string[];
+  before: string;
+  letter: string;
+  after: string;
+  hiddenLetter: string;
 }
 
-// --- DỮ LIỆU GỐC ---
-const HISTORICAL_EVENTS: EventData[] = [
-  { 
-    id: "e1", 
-    year: "1986", 
-    text: "Đại hội VI quyết định 'Phá rào' Đổi Mới toàn diện trong bối cảnh lạm phát phi mã chạm đỉnh kỷ lục 774%." 
+const CROSSWORD_ENTRIES: CrosswordEntry[] = [
+  {
+    clue: 'Nêu một thuận lợi của đất nước ta sau năm 1975.',
+acceptedAnswers: ['độc lập'], before: '', letter: 'Đ', after: 'ỘC LẬP', hiddenLetter: 'D',
   },
-  { 
-    id: "e2", 
-    year: "1989", 
-    text: "Chấm dứt hoàn toàn chế độ tem phiếu bao cấp, nhờ 'Khoán 10' vươn lên xuất khẩu chuyến gạo đầu tiên ra thế giới." 
+  {
+    clue: 'Hoạt động ngày 25/4/1976 để bầu Quốc hội chung được gọi là gì?',
+acceptedAnswers: ['tổng tuyển cử'], before: 'T', letter: 'Ổ', after: 'NG TUYỂN CỬ', hiddenLetter: 'O',
   },
-  { 
-    id: "e3", 
-    year: "1995", 
-    text: "Bước ngoặt ngoại giao kép: Chính thức bình thường hóa quan hệ với Hoa Kỳ và gia nhập khối ASEAN." 
+  {
+    clue: 'Văn kiện tháng 1/1981 thực hiện khoán sản phẩm trong nông nghiệp là gì?',
+acceptedAnswers: ['chỉ thị 100', 'chỉ thị 100-ct/tw'], before: 'CH', letter: 'Ỉ', after: ' THỊ 100', hiddenLetter: 'I',
   },
-  { 
-    id: "e4", 
-    year: "2007", 
-    text: "Vươn mình ra biển lớn: Trở thành thành viên thứ 150 của WTO và ban hành Nghị quyết 09 về Chiến lược biển." 
+  {
+    clue: 'Đại hội V xác định nông nghiệp là gì?',
+acceptedAnswers: ['mặt trận hàng đầu'], before: '', letter: 'M', after: 'ẶT TRẬN HÀNG ĐẦU', hiddenLetter: 'M',
   },
-  { 
-    id: "e5", 
-    year: "2020", 
-    text: "Tín nhiệm quốc tế đạt kỷ lục: Trúng cử Ủy viên không thường trực HĐBA Liên Hợp Quốc với số phiếu 192/193." 
+  {
+    clue: 'Đại hội IV chủ trương đẩy mạnh quá trình nào?',
+acceptedAnswers: ['công nghiệp hóa', 'công nghiệp hoá'], before: 'C', letter: 'Ô', after: 'NG NGHIỆP HÓA', hiddenLetter: 'O',
   },
-  { 
-    id: "e6", 
-    year: "2026", 
-    text: "Kỷ niệm 40 năm Đổi mới: Áp dụng bắt buộc tiêu chuẩn toàn cầu IFRS, ESG và Luật BHXH mới (tối thiểu 15 năm)." 
+  {
+    clue: 'Đường lối nào được đề ra tại Đại hội VI năm 1986?',
+acceptedAnswers: ['đổi mới'], before: 'ĐỔ', letter: 'I', after: ' MỚI', hiddenLetter: 'I',
   },
 ];
 
-// --- COMPONENT THẺ KÉO (DRAGGABLE) ---
-function DraggableEventCard({ event, isChecking, isCorrect }: { event: EventData, isChecking?: boolean, isCorrect?: boolean }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: event.id, data: event });
-
-  let cardClass = "minigame-card";
-  if (isDragging) cardClass += " dragging";
-  if (isChecking) {
-    cardClass += isCorrect ? " correct" : " incorrect";
-  }
-
-  return (
-    <div ref={setNodeRef} {...listeners} {...attributes} className={cardClass}>
-      <div className="card-indicator"></div>
-      <p className="card-text">{event.text}</p>
-    </div>
-  );
+function normalize(value: string) {
+  return value.toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z]/g, '');
 }
 
-// --- COMPONENT Ô THẢ (DROPPABLE) ---
-function DroppableSlot({ year, currentEvent, isChecking }: { year: string, currentEvent: EventData | null, isChecking: boolean }) {
-  const { isOver, setNodeRef } = useDroppable({ id: `slot-${year}`, data: { type: 'slot', year } });
-  const isCorrect = currentEvent?.id === HISTORICAL_EVENTS.find(e => e.year === year)?.id;
-
-  return (
-    <div className="timeline-slot-wrapper">
-      <div className="slot-year">{year}</div>
-      <div 
-        ref={setNodeRef} 
-        className={`slot-dropzone ${isOver ? 'is-over' : ''} ${currentEvent ? 'filled' : ''}`}
-      >
-        {currentEvent ? (
-          <DraggableEventCard event={currentEvent} isChecking={isChecking} isCorrect={isCorrect} />
-        ) : (
-          <span className="slot-placeholder">Thả sự kiện vào đây...</span>
-        )}
-      </div>
-    </div>
-  );
+function HiddenWordPart({ value }: { value: string }) {
+  return <span className="crossword-hidden-part">{Array.from(value).map((character, index) => character === ' ' ? <span className="crossword-space" key={index}> </span> : <span className="crossword-empty-char" key={index} />)}</span>;
 }
 
-// --- COMPONENT CHÍNH ---
 export default function MinigameContent() {
-  const [pool, setPool] = useState<EventData[]>([]);
-  const [slots, setSlots] = useState<Record<string, EventData | null>>({
-    "1986": null, "1989": null, "1995": null, "2007": null, "2020": null, "2026": null
-  });
-  const [activeEvent, setActiveEvent] = useState<EventData | null>(null);
-  const [isChecking, setIsChecking] = useState(false);
-  const [score, setScore] = useState<number | null>(null);
+  const [started, setStarted] = useState(false);
+  const [entryIndex, setEntryIndex] = useState(0);
+  const [earnedLetters, setEarnedLetters] = useState<string[]>([]);
+  const [answerInput, setAnswerInput] = useState('');
+  const [hiddenWordInput, setHiddenWordInput] = useState('');
+  const [feedback, setFeedback] = useState('');
+  const [isWrong, setIsWrong] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 180, tolerance: 6 } })
-  );
 
-  const initGame = () => {
-    const shuffled = [...HISTORICAL_EVENTS].sort(() => Math.random() - 0.5);
-    setPool(shuffled);
-    setSlots({ "1986": null, "1989": null, "1995": null, "2007": null, "2020": null, "2026": null });
-    setIsChecking(false);
-    setScore(null);
+  const resetGame = () => {
+    setStarted(false); setEntryIndex(0); setEarnedLetters([]);
+    setAnswerInput(''); setHiddenWordInput(''); setFeedback(''); setIsWrong(false); setIsComplete(false);
   };
 
-  useEffect(() => { initGame(); }, []);
-
-  const handleDragStart = (e: DragStartEvent) => {
-    const { active } = e;
-    setIsChecking(false);
-    const eventData = HISTORICAL_EVENTS.find(ev => ev.id === active.id);
-    if (eventData) setActiveEvent(eventData);
-  };
-
-  const handleDragEnd = (e: DragEndEvent) => {
-    const { active, over } = e;
-    setActiveEvent(null);
-    if (!over) return;
-
-    const draggedEvent = HISTORICAL_EVENTS.find(ev => ev.id === active.id)!;
-    const overId = String(over.id);
-
-    let sourceSlotYear: string | null = null;
-    for (const [year, ev] of Object.entries(slots)) {
-      if (ev?.id === draggedEvent.id) sourceSlotYear = year;
+  const submitAnswer = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!started || !answerInput.trim()) return;
+    const entry = CROSSWORD_ENTRIES[entryIndex];
+    const isCorrect = entry.acceptedAnswers.some((candidate) => normalize(candidate) === normalize(answerInput));
+    if (!isCorrect) {
+      setFeedback('Chưa chính xác. Hãy đoán cả từ hoặc cụm từ theo gợi ý.'); setIsWrong(true); return;
     }
+    setEarnedLetters((current) => [...current, entry.hiddenLetter]);
+    setEntryIndex((current) => current + 1);
+    setAnswerInput(''); setFeedback('Chính xác! Đáp án đã được điền vào ô chữ.'); setIsWrong(false);
+  };
 
-    const newSlots = { ...slots };
-    let newPool = [...pool];
-
-    if (overId === 'events-pool') {
-      if (sourceSlotYear) {
-        newSlots[sourceSlotYear] = null;
-        if (!newPool.find(p => p.id === draggedEvent.id)) newPool.push(draggedEvent);
-      }
-    } 
-    else if (overId.startsWith('slot-')) {
-      const targetYear = overId.replace('slot-', '');
-      const itemInTargetSlot = newSlots[targetYear];
-
-      if (sourceSlotYear) {
-        newSlots[sourceSlotYear] = itemInTargetSlot;
-        newSlots[targetYear] = draggedEvent;
-      } else {
-        newPool = newPool.filter(ev => ev.id !== draggedEvent.id);
-        if (itemInTargetSlot) newPool.push(itemInTargetSlot);
-        newSlots[targetYear] = draggedEvent;
-      }
+  const submitHiddenWord = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (normalize(hiddenWordInput) === normalize('ĐỔI MỚI')) {
+      setIsComplete(true); setFeedback('Chính xác! Bạn đã giải được từ khóa ẩn.'); setIsWrong(false);
+    } else {
+      setFeedback('Từ khóa chưa đúng. Hãy ghép các chữ cái theo thứ tự từ trên xuống.'); setIsWrong(true);
     }
-
-    setSlots(newSlots);
-    setPool(newPool);
   };
 
-  const handleCheck = () => {
-    let correct = 0;
-    HISTORICAL_EVENTS.forEach(ev => {
-      if (slots[ev.year]?.id === ev.id) correct++;
-    });
-    setScore(correct);
-    setIsChecking(true);
-  };
-
-  const { setNodeRef: setPoolRef } = useDroppable({ id: 'events-pool' });
+  const allEntriesSolved = entryIndex === CROSSWORD_ENTRIES.length;
 
   return (
-    // Tăng maxWidth lên 1400px để không gian rộng rãi hơn
-    <div className="quiz-container animate-fade-in" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 20px' }}>
-      <header className="quiz-header" style={{ marginBottom: '40px' }}>
-        <h2 className="quiz-main-title">Ghép Mốc Lịch Sử Đổi Mới</h2>
-        <p className="quiz-subtitle">Kéo mỗi sự kiện thả vào đúng năm tương ứng. Hoàn thành 6 mốc để mở khoá "Nhà sử học Gen Z".</p>
+    <main className="quiz-container word-game-container animate-fade-in">
+      <header className="quiz-header word-game-header">
+        <span className="quiz-section-tag">TRÒ CHƠI ÔN TẬP</span>
+        <h2 className="quiz-main-title">Ô chữ lịch sử</h2>
+        <p className="quiz-subtitle">Đoán từ hoặc cụm từ theo gợi ý. Chữ giao nhau sẽ ghép thành từ khóa ẩn.</p>
+        <div className="word-game-toolbar">
+          <button className="btn-mg check" onClick={() => setStarted(true)} disabled={started || isComplete}>{started ? 'Trò chơi đang diễn ra' : 'Bắt đầu'}</button>
+          <button className="btn-mg reset" onClick={resetGame}>Chơi lại</button>
+        </div>
       </header>
 
-      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="minigame-layout">
-          
-          {/* CỘT TRÁI: DÒNG THỜI GIAN (Rộng hơn) */}
-          <div className="mg-panel timeline-panel">
-            <h3 className="mg-panel-title">Dòng thời gian</h3>
-            <div className="timeline-grid">
-              {Object.keys(slots).map((year) => (
-                <DroppableSlot key={year} year={year} currentEvent={slots[year]} isChecking={isChecking} />
-              ))}
-            </div>
-
-            <div className="mg-actions-container">
-              <div className="mg-actions">
-                <button className="btn-mg check" onClick={handleCheck} disabled={Object.values(slots).includes(null)}>
-                  ✦ Kiểm tra
-                </button>
-                <button className="btn-mg reset" onClick={initGame}>
-                  ↻ Làm lại
-                </button>
-              </div>
-              
-              {isChecking && score !== null && (
-                <div className={`mg-result-badge ${score === 6 ? 'success' : 'warning'}`}>
-                  {score === 6 ? "🎉 Tuyệt vời! Bạn là Nhà sử học Gen Z!" : `Bạn ghép đúng ${score}/6 mốc. Hãy thử lại nhé!`}
-                </div>
-              )}
-            </div>
+      <section className="word-game-card crossword-card">
+        <div className="word-game-progress-row">
+          <span>{allEntriesSolved ? 'GIẢI TỪ KHÓA ẨN' : `GỢI Ý ${entryIndex + 1} / ${CROSSWORD_ENTRIES.length}`}</span>
+          <div className="word-game-progress" aria-label={`Đã giải ${earnedLetters.length} trên ${CROSSWORD_ENTRIES.length} gợi ý`}>
+            {CROSSWORD_ENTRIES.map((_, index) => <span className={index < earnedLetters.length ? 'earned' : ''} key={index}>{index + 1}</span>)}
           </div>
-
-          {/* CỘT PHẢI: KHO SỰ KIỆN (Gọn hơn) */}
-          <div className="mg-panel events-panel">
-            <h3 className="mg-panel-title">Sự kiện</h3>
-            <div ref={setPoolRef} className="events-pool">
-              {pool.length === 0 && <div className="pool-empty">✨ Tất cả sự kiện đã được ghép! ✨</div>}
-              {pool.map((event) => (
-                <DraggableEventCard key={event.id} event={event} />
-              ))}
-            </div>
-          </div>
-
         </div>
 
-        <DragOverlay dropAnimation={{ duration: 250, easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)' }}>
-          {activeEvent ? (
-            <div style={{ cursor: 'grabbing', opacity: 0.9, transform: 'scale(1.02)' }}>
-              <DraggableEventCard event={activeEvent} />
+        <div className="crossword-board" aria-label="Ô chữ; chữ giao nhau tạo thành từ khóa ẩn">
+          {CROSSWORD_ENTRIES.map((entry, index) => (
+            <div className={`crossword-row ${index === entryIndex && !allEntriesSolved ? 'current' : ''} ${index < earnedLetters.length ? 'solved' : ''}`} key={index}>
+              {index < earnedLetters.length ? (
+                <><span className="crossword-before">{entry.before}</span><span className="crossword-cell">{entry.letter}</span><span className="crossword-after">{entry.after}</span></>
+              ) : (
+                <><span className="crossword-before"><HiddenWordPart value={entry.before} /></span><span className="crossword-cell" aria-label="Ô giao nhau còn thiếu"></span><span className="crossword-after"><HiddenWordPart value={entry.after} /></span></>
+              )}
             </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
-    </div>
+          ))}
+        </div>
+
+        {!allEntriesSolved ? (
+          <>
+            <div className="crossword-clue-label">GỢI Ý {entryIndex + 1}</div>
+            <h3 className="word-game-clue">{CROSSWORD_ENTRIES[entryIndex].clue}</h3>
+            <form className="word-game-answer-form" onSubmit={submitAnswer}>
+              <label className="word-game-answer-label" htmlFor="crossword-answer">Nhập cả từ hoặc cụm từ</label>
+              <div className="word-game-answer-row">
+                <input id="crossword-answer" value={answerInput} onChange={(event) => { setAnswerInput(event.target.value); setFeedback(''); setIsWrong(false); }} placeholder="Nhập đáp án..." disabled={!started} autoComplete="off" />
+                <button className="btn-mg check" type="submit" disabled={!started || !answerInput.trim()}>Trả lời</button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <div className="hidden-word-stage">
+            <div className="crossword-clue-label">CÁC CHỮ GIAO NHAU</div>
+            <div className="earned-letters" aria-label={earnedLetters.join(' ')}>{earnedLetters.map((letter, index) => <span key={index}>{normalize(letter).toUpperCase()}</span>)}</div>
+            <h3 className="word-game-clue">Ghép cột chữ để tìm từ khóa của giai đoạn 1975–1986.</h3>
+            <form className="word-game-answer-form" onSubmit={submitHiddenWord}>
+              <label className="word-game-answer-label" htmlFor="hidden-word">Từ khóa ẩn</label>
+              <div className="word-game-answer-row">
+                <input id="hidden-word" value={hiddenWordInput} onChange={(event) => { setHiddenWordInput(event.target.value); setFeedback(''); setIsWrong(false); }} placeholder="Nhập từ khóa..." disabled={!started || isComplete} autoComplete="off" />
+                <button className="btn-mg check" type="submit" disabled={!started || isComplete || !hiddenWordInput.trim()}>Mở từ khóa</button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {feedback && <p className={`word-game-feedback ${isWrong ? 'wrong' : 'right'}`} role="status">{feedback}</p>}
+        {isComplete && <div className="word-game-win">✦ TỪ KHÓA: ĐỔI MỚI ✦</div>}
+      </section>
+    </main>
   );
 }

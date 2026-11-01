@@ -4,6 +4,7 @@ import ParticlesBg from './components/ParticlesBg';
 import MagazineContent from './components/MagazineContent';
 import QuizContent from './components/QuizContent';
 import MiniGame from './components/MinigameContent';
+import TeamContent from './components/TeamContent';
 import logoImg from './assets/logo.png';
 import poinImg from './assets/poin.png';
 
@@ -16,13 +17,13 @@ interface MilestoneCoord {
 }
 
 const milestoneCoords: MilestoneCoord[] = [
-  { x: 180, y: 480, year: "1986", label: "Khủng hoảng & Quyết định" },
-  { x: 500, y: 650, year: "1989", label: "Kỳ tích gạo xuất khẩu" },
-  { x: 820, y: 380, year: "1995", label: "Bắt tay mở cửa hội nhập" },
-  { x: 1140, y: 520, year: "2007", label: "Gia nhập WTO thế giới" },
-  { x: 1460, y: 650, year: "2020", label: "Kinh tế số quốc gia" },
-  { x: 1780, y: 480, year: "2026", label: "Việt Nam Hùng Cường" },
-  { x: 2100, y: 590, year: "40 Năm", label: "Tổng kết Đổi Mới" }
+  { x: 180, y: 480, year: "1975", label: "Đất nước sau chiến tranh" },
+  { x: 500, y: 650, year: "1976", label: "Thống nhất nhà nước" },
+  { x: 820, y: 380, year: "1976–1981", label: "Đại hội IV & thực tiễn" },
+  { x: 1140, y: 520, year: "1979–1981", label: "Bước đột phá đầu tiên" },
+  { x: 1460, y: 650, year: "1982", label: "Đại hội V" },
+  { x: 1780, y: 480, year: "1984–1985", label: "Cải cách kinh tế" },
+  { x: 2100, y: 590, year: "1986", label: "Chuyển biến tư duy" }
 ];
 
 export default function App() {
@@ -30,7 +31,7 @@ export default function App() {
   const viewportRef = useRef<HTMLDivElement>(null);
   
   // App state
-  const [currentTab, setCurrentTab] = useState<'timeline' | 'quiz' | 'minigame'>('timeline');
+  const [currentTab, setCurrentTab] = useState<'timeline' | 'quiz' | 'minigame' | 'team'>('timeline');
   const [activeMilestone, setActiveMilestone] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
@@ -328,8 +329,8 @@ export default function App() {
             <img src={logoImg} alt="Logo" style={{ height: '100%', width: 'auto', objectFit: 'contain' }} />
           </div>
           <div className="brand-section">
-            <h1 className="brand-title">40 Năm đổi mới</h1>
-            <span className="brand-subtitle">Tạp chí số — Gen Z</span>
+            <h1 className="brand-title">Lịch sử Đảng</h1>
+            <span className="brand-subtitle">Xây dựng và bảo vệ Tổ quốc · 1975—1986</span>
           </div>
         </div>
 
@@ -347,6 +348,21 @@ export default function App() {
 
         <nav className={`nav-links ${mobileMenuOpen ? 'nav-open' : ''}`}>
           <button
+            className={`nav-link ${currentTab === 'team' ? 'active' : ''}`}
+            onClick={() => {
+              if (!isTransitioning) {
+                setCurrentTab('team');
+                setMobileMenuOpen(false);
+              }
+            }}
+          >
+            <svg className="nav-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="9" cy="8" r="3"></circle><path d="M3 20c0-3 2-5 6-5s6 2 6 5"></path><path d="M16 5a3 3 0 0 1 0 6M18 15c2 .5 3 2 3 5"></path>
+            </svg>
+            Thành viên
+          </button>
+
+          <button
             className={`nav-link ${currentTab === 'timeline' ? 'active' : ''}`}
             onClick={() => {
               if (!isTransitioning) {
@@ -362,19 +378,6 @@ export default function App() {
             </svg>
             Tạp Chí Số
           </button>
-
-          <a
-            href="/map.html"
-            className="nav-link"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <svg className="nav-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
-              <line x1="8" y1="2" x2="8" y2="18"></line>
-              <line x1="16" y1="6" x2="16" y2="22"></line>
-            </svg>
-            Bản đồ
-          </a>
 
           <button
             className={`nav-link ${currentTab === 'quiz' ? 'active' : ''}`}
@@ -423,10 +426,10 @@ export default function App() {
           <div className={`intro-overlay ${activeMilestone !== null ? 'fade-out-element' : ''}`}>
             <div className="intro-tag">Tạp chí số đa phương tiện</div>
             <h2 className="intro-title">
-              BƯỚC NGOẶT<br />
-              <span>ĐỔI MỚI</span>
+              ĐẢNG LÃNH ĐẠO<br />
+              <span>CẢ NƯỚC</span>
             </h2>
-            <p className="intro-desc">Từ khủng hoảng 1986 đến khát vọng 2026</p>
+            <p className="intro-desc">Xây dựng chủ nghĩa xã hội và bảo vệ Tổ quốc · 1975–1986</p>
           </div>
 
           {/* 4. Zoomable Timeline Viewport */}
@@ -442,10 +445,10 @@ export default function App() {
                 <defs>
                   {/* Metallic Gold gradient for the path */}
                   <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#8f1d2b" />
-                    <stop offset="30%" stopColor="#d4af37" />
-                    <stop offset="70%" stopColor="#ffdf79" />
-                    <stop offset="100%" stopColor="#d4af37" />
+                    <stop offset="0%" stopColor="#fff0f2" />
+                    <stop offset="30%" stopColor="#ff7890" />
+                    <stop offset="70%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#ff7890" />
                   </linearGradient>
                 </defs>
 
@@ -467,7 +470,7 @@ export default function App() {
                 {/* Glowing comet riding the active flow path edge */}
                 {totalPathLength > 0 && (
                   <g transform={`translate(${cometPosition.x}, ${cometPosition.y})`} className="comet-glow">
-                    <circle r="14" fill="#ffcf5c" opacity="0.4" />
+                    <circle r="14" fill="#ffffff" opacity="0.48" />
                     <circle r="7" fill="#ffffff" />
                   </g>
                 )}
@@ -528,6 +531,7 @@ export default function App() {
 
       {/* Mini Game tab */}
       {currentTab === 'minigame' && <MiniGame />}
+      {currentTab === 'team' && <TeamContent />}
 
     </div>
   );

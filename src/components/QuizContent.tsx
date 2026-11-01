@@ -14,75 +14,99 @@ interface Question {
 const quizQuestions: Question[] = [
   {
     id: 1,
-    questionText: "Lạm phát Việt Nam năm 1986 đạt mức bao nhiêu?",
+    questionText: "Tổng tuyển cử bầu Quốc hội chung được tổ chức vào ngày nào?",
     options: [
-      { key: "A", text: "77,4%" },
-      { key: "B", text: "774%" },
-      { key: "C", text: "174%" },
-      { key: "D", text: "374%" }
+      { key: "A", text: "25/4/1976" },
+      { key: "B", text: "30/4/1975" },
+      { key: "C", text: "14/12/1976" },
+      { key: "D", text: "27/3/1982" }
     ],
-    correctAnswer: "B",
-    explanation: "Đỉnh điểm lạm phát phi mã vào năm 1986 lên tới 774,7%, khiến đồng tiền mất giá trầm trọng và đời sống nhân dân cực kỳ khó khăn."
+    correctAnswer: "A",
+    explanation: "Ngày 25/4/1976, cử tri cả nước tham gia tổng tuyển cử bầu Quốc hội chung."
   },
   {
     id: 2,
-    questionText: "Sự kiện Đổi Mới nông nghiệp năm 1989 nổi tiếng dưới tên gọi nghị quyết khoán nào?",
+    questionText: "Đại hội IV đề ra kế hoạch phát triển kinh tế trong thời gian nào?",
     options: [
-      { key: "A", text: "Khoán 10 (Nghị quyết 10)" },
-      { key: "B", text: "Khoán 100" },
-      { key: "C", text: "Khoán 20" },
-      { key: "D", text: "Khoán 5" }
+      { key: "A", text: "1975–1979" },
+      { key: "B", text: "1976–1980" },
+      { key: "C", text: "1981–1985" },
+      { key: "D", text: "1986–1990" }
     ],
-    correctAnswer: "A",
-    explanation: "Khoán 10 (Nghị quyết 10 của Bộ Chính trị ban hành năm 1988) giao quyền tự chủ sản xuất và ruộng đất lâu dài cho hộ nông dân, giúp nông nghiệp bùng nổ năm 1989."
+    correctAnswer: "B",
+    explanation: "Đại hội IV thông qua kế hoạch phát triển kinh tế 5 năm 1976–1980."
   },
   {
     id: 3,
-    questionText: "Việt Nam chính thức bình thường hóa quan hệ ngoại giao với Mỹ và gia nhập ASEAN vào năm nào?",
+    questionText: "Hội nghị Trung ương 6 khóa IV (8/1979) chủ trương điều gì?",
     options: [
-      { key: "A", text: "Năm 1986" },
-      { key: "B", text: "Năm 1989" },
-      { key: "C", text: "Năm 1995" },
-      { key: "D", text: "Năm 2007" }
+      { key: "A", text: "Tháo gỡ rào cản để sản xuất phát triển" },
+      { key: "B", text: "Tổ chức Đại hội V" },
+      { key: "C", text: "Thực hiện cải cách giá – lương – tiền" },
+      { key: "D", text: "Bầu Quốc hội khóa VI" }
     ],
-    correctAnswer: "C",
-    explanation: "Tháng 7 năm 1995 đánh dấu mốc lịch sử kép trong chính sách đối ngoại khi Việt Nam bình thường hóa quan hệ với Hoa Kỳ và chính thức gia nhập ASEAN."
+    correctAnswer: "A",
+    explanation: "Hội nghị được xem là bước đột phá đầu tiên trong tìm tòi đổi mới kinh tế."
   },
   {
     id: 4,
-    questionText: "Khi gia nhập Tổ chức Thương mại Thế giới (WTO) năm 2007, Việt Nam là thành viên thứ bao nhiêu?",
+    questionText: "Chỉ thị 100-CT/TW (1/1981) gắn với lĩnh vực nào?",
     options: [
-      { key: "A", text: "Thành viên thứ 140" },
-      { key: "B", text: "Thành viên thứ 150" },
-      { key: "C", text: "Thành viên thứ 160" },
-      { key: "D", text: "Thành viên thứ 170" }
+      { key: "A", text: "Khoán sản phẩm trong nông nghiệp" },
+      { key: "B", text: "Cải cách tiền lương giáo viên" },
+      { key: "C", text: "Mở rộng hoạt động xuất khẩu" },
+      { key: "D", text: "Phát triển công nghiệp nặng" }
     ],
-    correctAnswer: "B",
-    explanation: "Ngày 11/01/2007, Việt Nam chính thức trở thành thành viên thứ 150 của WTO sau 11 năm đàm phán kiên trì."
+    correctAnswer: "A",
+    explanation: "Chỉ thị 100-CT/TW triển khai khoán sản phẩm trong nông nghiệp."
   },
   {
     id: 5,
-    questionText: "Năm 2020, Việt Nam chính thức phê duyệt Chương trình quốc gia về lĩnh vực then chốt nào?",
+    questionText: "Đại hội V xác định lĩnh vực nào là mặt trận hàng đầu?",
     options: [
-      { key: "A", text: "Chuyển đổi số quốc gia" },
-      { key: "B", text: "Phát triển năng lượng hạt nhân" },
-      { key: "C", text: "Đô thị hóa xanh tuần hoàn" },
-      { key: "D", text: "Hiện đại hóa hạ tầng hàng không" }
+      { key: "A", text: "Công nghiệp nặng" },
+      { key: "B", text: "Nông nghiệp" },
+      { key: "C", text: "Du lịch" },
+      { key: "D", text: "Tài chính – ngân hàng" }
     ],
-    correctAnswer: "A",
-    explanation: "Thủ tướng Chính phủ đã phê duyệt 'Chương trình Chuyển đổi số quốc gia đến năm 2025, định hướng đến năm 2030', thúc đẩy kinh tế số bùng nổ mạnh mẽ."
+    correctAnswer: "B",
+    explanation: "Đại hội V chú trọng nông nghiệp, hàng tiêu dùng và hàng xuất khẩu."
   },
   {
     id: 6,
-    questionText: "Mục tiêu cam kết Net-Zero (phát thải ròng bằng không) của Việt Nam hướng tới mốc năm nào?",
+    questionText: "Hội nghị Trung ương 8 khóa V (6/1985) chủ trương cải cách nào?",
     options: [
-      { key: "A", text: "Năm 2030" },
-      { key: "B", text: "Năm 2045" },
-      { key: "C", text: "Năm 2050" },
-      { key: "D", text: "Năm 2060" }
+      { key: "A", text: "Giá – lương – tiền" },
+      { key: "B", text: "Giáo dục – y tế – văn hóa" },
+      { key: "C", text: "Thuế – đất đai – hộ khẩu" },
+      { key: "D", text: "Xuất nhập khẩu – hải quan" }
     ],
-    correctAnswer: "C",
-    explanation: "Tại Hội nghị COP26 năm 2021, Việt Nam cam kết mạnh mẽ đạt mức phát thải ròng bằng '0' (Net-Zero) vào năm 2050, hướng tới chuyển đổi xanh bền vững."
+    correctAnswer: "A",
+    explanation: "Đây là bước đột phá thứ hai; việc thực hiện thiếu đồng bộ và chưa chuẩn bị đầy đủ khiến khó khăn kinh tế tăng thêm."
+  },
+  {
+    id: 7,
+    questionText: "Kết luận tháng 8/1986 của Bộ Chính trị nhấn mạnh nội dung nào?",
+    options: [
+      { key: "A", text: "Điều chỉnh cơ cấu, phù hợp kinh tế nhiều thành phần, đổi mới quản lý" },
+      { key: "B", text: "Mở rộng đầu tư công nghiệp nặng bằng mọi giá" },
+      { key: "C", text: "Khôi phục cơ chế kinh tế thời chiến" },
+      { key: "D", text: "Dừng các thử nghiệm sản xuất" }
+    ],
+    correctAnswer: "A",
+    explanation: "Ba hướng nổi bật là điều chỉnh cơ cấu sản xuất, nhận thức lại cải tạo xã hội chủ nghĩa và đổi mới cơ chế quản lý kinh tế."
+  },
+  {
+    id: 8,
+    questionText: "Các bước đột phá 1979, 1985 và 1986 góp phần hình thành điều gì?",
+    options: [
+      { key: "A", text: "Tiền đề cho đường lối Đổi mới tại Đại hội VI" },
+      { key: "B", text: "Kế hoạch 5 năm 1976–1980" },
+      { key: "C", text: "Cuộc tổng tuyển cử năm 1976" },
+      { key: "D", text: "Sự ra đời của Đại hội V" }
+    ],
+    correctAnswer: "A",
+    explanation: "Quá trình tổng kết thực tiễn và điều chỉnh tư duy tạo cơ sở cho đường lối Đổi mới được đề ra tại Đại hội VI tháng 12/1986."
   }
 ];
 
