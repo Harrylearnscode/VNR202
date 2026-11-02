@@ -11,30 +11,44 @@ interface CrosswordEntry {
 
 const CROSSWORD_ENTRIES: CrosswordEntry[] = [
   {
-    clue: 'Nêu một thuận lợi của đất nước ta sau năm 1975.',
-acceptedAnswers: ['độc lập'], before: '', letter: 'Đ', after: 'ỘC LẬP', hiddenLetter: 'D',
+    clue: 'Cuộc bỏ phiếu toàn dân ngày 25/4/1976 để bầu Quốc hội chung được gọi là gì?',
+    acceptedAnswers: ['tổng tuyển cử'], before: '', letter: 'T', after: 'ỔNG TUYỂN CỬ', hiddenLetter: 'T',
   },
   {
-    clue: 'Hoạt động ngày 25/4/1976 để bầu Quốc hội chung được gọi là gì?',
-acceptedAnswers: ['tổng tuyển cử'], before: 'T', letter: 'Ổ', after: 'NG TUYỂN CỬ', hiddenLetter: 'O',
+    clue: 'Sau khi chiến tranh kết thúc, đất nước bước vào thời kỳ gì?',
+    acceptedAnswers: ['hòa bình', 'hoa binh'], before: '', letter: 'H', after: 'ÒA BÌNH', hiddenLetter: 'H',
   },
   {
-    clue: 'Văn kiện tháng 1/1981 thực hiện khoán sản phẩm trong nông nghiệp là gì?',
-acceptedAnswers: ['chỉ thị 100', 'chỉ thị 100-ct/tw'], before: 'CH', letter: 'Ỉ', after: ' THỊ 100', hiddenLetter: 'I',
+    clue: 'Cơ quan đại diện được bầu trong cuộc Tổng tuyển cử năm 1976 là gì?',
+    acceptedAnswers: ['quốc hội'], before: 'QU', letter: 'Ố', after: 'C HỘI', hiddenLetter: 'Ố',
   },
   {
-    clue: 'Đại hội V xác định nông nghiệp là gì?',
-acceptedAnswers: ['mặt trận hàng đầu'], before: '', letter: 'M', after: 'ẶT TRẬN HÀNG ĐẦU', hiddenLetter: 'M',
+    clue: 'Chỉ thị 100-CT/TW năm 1981 áp dụng khoán sản phẩm chủ yếu trong lĩnh vực nào?',
+    acceptedAnswers: ['nông nghiệp'], before: '', letter: 'N', after: 'ÔNG NGHIỆP', hiddenLetter: 'N',
   },
   {
-    clue: 'Đại hội IV chủ trương đẩy mạnh quá trình nào?',
-acceptedAnswers: ['công nghiệp hóa', 'công nghiệp hoá'], before: 'C', letter: 'Ô', after: 'NG NGHIỆP HÓA', hiddenLetter: 'O',
+    clue: 'Đại hội IV đổi tên Đảng Lao động Việt Nam thành Đảng nào?',
+    acceptedAnswers: ['đảng cộng sản việt nam'], before: 'ĐẢN', letter: 'G', after: ' CỘNG SẢN VIỆT NAM', hiddenLetter: 'G',
   },
   {
-    clue: 'Đường lối nào được đề ra tại Đại hội VI năm 1986?',
-acceptedAnswers: ['đổi mới'], before: 'ĐỔ', letter: 'I', after: ' MỚI', hiddenLetter: 'I',
+    clue: 'Tháng 6/1985 diễn ra Hội nghị Trung ương lần thứ mấy khóa V?',
+    acceptedAnswers: ['hội nghị trung ương 8', 'trung ương 8'], before: 'HỘI NGHỊ TRU', letter: 'N', after: 'G ƯƠNG 8', hiddenLetter: 'N',
+  },
+  {
+    clue: 'Đại hội V xác định ngoài nông nghiệp cần chú trọng sản xuất hàng gì phục vụ đời sống?',
+    acceptedAnswers: ['hàng tiêu dùng', 'tiêu dùng'], before: '', letter: 'H', after: 'ÀNG TIÊU DÙNG', hiddenLetter: 'H',
+  },
+  {
+    clue: 'Đại hội V chủ trương phát triển hàng tiêu dùng và hàng gì?',
+    acceptedAnswers: ['hàng xuất khẩu', 'xuất khẩu'], before: 'HÀNG XU', letter: 'Ấ', after: 'T KHẨU', hiddenLetter: 'Ấ',
+  },
+  {
+    clue: 'Sau Tổng tuyển cử năm 1976, Quốc hội tạo cơ sở chính trị để hoàn thành nhiệm vụ gì?',
+    acceptedAnswers: ['thống nhất đất nước', 'thong nhat dat nuoc'], before: 'THỐNG NHẤ', letter: 'T', after: ' ĐẤT NƯỚC', hiddenLetter: 'T',
   },
 ];
+
+const ALL_CLUES = CROSSWORD_ENTRIES;
 
 function normalize(value: string) {
   return value.toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z]/g, '');
@@ -63,33 +77,35 @@ export default function MinigameContent() {
   const submitAnswer = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!started || !answerInput.trim()) return;
-    const entry = CROSSWORD_ENTRIES[entryIndex];
+    const entry = ALL_CLUES[entryIndex];
     const isCorrect = entry.acceptedAnswers.some((candidate) => normalize(candidate) === normalize(answerInput));
     if (!isCorrect) {
       setFeedback('Chưa chính xác. Hãy đoán cả từ hoặc cụm từ theo gợi ý.'); setIsWrong(true); return;
     }
-    setEarnedLetters((current) => [...current, entry.hiddenLetter]);
+    if (entryIndex < CROSSWORD_ENTRIES.length) {
+      setEarnedLetters((current) => [...current, (entry as CrosswordEntry).hiddenLetter]);
+    }
     setEntryIndex((current) => current + 1);
     setAnswerInput(''); setFeedback('Chính xác! Đáp án đã được điền vào ô chữ.'); setIsWrong(false);
   };
 
   const submitHiddenWord = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (normalize(hiddenWordInput) === normalize('ĐỔI MỚI')) {
+    if (normalize(hiddenWordInput) === normalize('THỐNG NHẤT')) {
       setIsComplete(true); setFeedback('Chính xác! Bạn đã giải được từ khóa ẩn.'); setIsWrong(false);
     } else {
       setFeedback('Từ khóa chưa đúng. Hãy ghép các chữ cái theo thứ tự từ trên xuống.'); setIsWrong(true);
     }
   };
 
-  const allEntriesSolved = entryIndex === CROSSWORD_ENTRIES.length;
+  const allEntriesSolved = entryIndex === ALL_CLUES.length;
 
   return (
     <main className="quiz-container word-game-container animate-fade-in">
       <header className="quiz-header word-game-header">
         <span className="quiz-section-tag">TRÒ CHƠI ÔN TẬP</span>
         <h2 className="quiz-main-title">Ô chữ lịch sử</h2>
-        <p className="quiz-subtitle">Đoán từ hoặc cụm từ theo gợi ý. Chữ giao nhau sẽ ghép thành từ khóa ẩn.</p>
+        <p className="quiz-subtitle">Giải 9 gợi ý để mở chữ giao nhau và ghép từ khóa ẩn của giai đoạn 1975–1986.</p>
         <div className="word-game-toolbar">
           <button className="btn-mg check" onClick={() => setStarted(true)} disabled={started || isComplete}>{started ? 'Trò chơi đang diễn ra' : 'Bắt đầu'}</button>
           <button className="btn-mg reset" onClick={resetGame}>Chơi lại</button>
@@ -99,8 +115,8 @@ export default function MinigameContent() {
       <section className="word-game-card crossword-card">
         <div className="word-game-progress-row">
           <span>{allEntriesSolved ? 'GIẢI TỪ KHÓA ẨN' : `GỢI Ý ${entryIndex + 1} / ${CROSSWORD_ENTRIES.length}`}</span>
-          <div className="word-game-progress" aria-label={`Đã giải ${earnedLetters.length} trên ${CROSSWORD_ENTRIES.length} gợi ý`}>
-            {CROSSWORD_ENTRIES.map((_, index) => <span className={index < earnedLetters.length ? 'earned' : ''} key={index}>{index + 1}</span>)}
+          <div className="word-game-progress" aria-label={`Đã giải ${entryIndex} trên ${ALL_CLUES.length} câu`}>
+            {ALL_CLUES.map((_, index) => <span className={index < entryIndex ? 'earned' : ''} key={index}>{index + 1}</span>)}
           </div>
         </div>
 
@@ -119,7 +135,7 @@ export default function MinigameContent() {
         {!allEntriesSolved ? (
           <>
             <div className="crossword-clue-label">GỢI Ý {entryIndex + 1}</div>
-            <h3 className="word-game-clue">{CROSSWORD_ENTRIES[entryIndex].clue}</h3>
+            <h3 className="word-game-clue">{ALL_CLUES[entryIndex].clue}</h3>
             <form className="word-game-answer-form" onSubmit={submitAnswer}>
               <label className="word-game-answer-label" htmlFor="crossword-answer">Nhập cả từ hoặc cụm từ</label>
               <div className="word-game-answer-row">
@@ -131,7 +147,7 @@ export default function MinigameContent() {
         ) : (
           <div className="hidden-word-stage">
             <div className="crossword-clue-label">CÁC CHỮ GIAO NHAU</div>
-            <div className="earned-letters" aria-label={earnedLetters.join(' ')}>{earnedLetters.map((letter, index) => <span key={index}>{normalize(letter).toUpperCase()}</span>)}</div>
+            <div className="earned-letters" aria-label={earnedLetters.join(' ')}>{earnedLetters.map((letter, index) => <span key={index}>{letter.toLocaleUpperCase('vi')}</span>)}</div>
             <h3 className="word-game-clue">Ghép cột chữ để tìm từ khóa của giai đoạn 1975–1986.</h3>
             <form className="word-game-answer-form" onSubmit={submitHiddenWord}>
               <label className="word-game-answer-label" htmlFor="hidden-word">Từ khóa ẩn</label>
@@ -144,7 +160,7 @@ export default function MinigameContent() {
         )}
 
         {feedback && <p className={`word-game-feedback ${isWrong ? 'wrong' : 'right'}`} role="status">{feedback}</p>}
-        {isComplete && <div className="word-game-win">✦ TỪ KHÓA: ĐỔI MỚI ✦</div>}
+        {isComplete && <div className="word-game-win">✦ TỪ KHÓA: THỐNG NHẤT ✦</div>}
       </section>
     </main>
   );
