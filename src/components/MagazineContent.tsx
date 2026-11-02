@@ -27,7 +27,7 @@ export interface MilestoneData {
 import { presentationSlides } from './PresentationSlide';
 
 const mediaByPeriod: Record<string, MediaItem[]> = {
-  '1975': [{ type: 'image', url: '/dat-nuoc-sau-chien-tranh.jpg', title: 'Đất nước sau chiến tranh', caption: 'Bối cảnh đất nước sau ngày giải phóng miền Nam năm 1975.' }],
+  '1975': [{ type: 'image', url: '/dat-nuoc-sau-chien-tranh.jpg', title: 'Giải phóng miền Nam, thống nhất đất nước', caption: 'Xe tăng quân giải phóng tiến vào dinh độc lập' }],
   '1976': [{ type: 'image', url: '/thong-nhat-nha-nuoc.jpg', title: 'Thống nhất nhà nước', caption: 'Hoàn thành thống nhất đất nước về mặt nhà nước.' }],
   '1976–1981': [{ type: 'image', url: '/dai-hoi-4.jpg', title: 'Đại hội đại biểu toàn quốc lần thứ IV', caption: 'Đại hội IV đề ra đường lối xây dựng đất nước sau thống nhất.' }],
   '1979–1981': [{ type: 'image', url: '/buoc-dot-pha-dau-tien.jpg', title: 'Bước đột phá kinh tế đầu tiên', caption: 'Những điều chỉnh bước đầu nhằm tháo gỡ khó khăn trong sản xuất.' }],
@@ -41,7 +41,7 @@ export const milestonesData: MilestoneData[] = presentationSlides.map((slide) =>
   title: slide.title,
   subtitle: slide.section,
   quote: '',
-  description: slide.blocks.map((block) => `• ${block.items.join(' ')}`).join('\n'),
+  description: slide.blocks.map((block) => `${block.items.map((item) => `• ${item}`).join('\n')}`).join('\n\n'),
   story: '',
   stats: slide.blocks.map((block, index) => ({
     value: String(index + 1).padStart(2, '0'),
@@ -113,6 +113,7 @@ export default function MagazineContent({
                 ))}
               </ul>
             </div>}
+
           </div>
 
           {/* Right Column: Multimedia Showcase & Statistics Card */}
@@ -159,7 +160,6 @@ export default function MagazineContent({
               )}
             </div>
 
-            {/* Statistics Card */}
             <div className="stats-card">
               <h4 className="stats-card-title">NỘI DUNG CHÍNH</h4>
               <div className="stats-grid">

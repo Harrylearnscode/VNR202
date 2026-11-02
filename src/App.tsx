@@ -315,7 +315,7 @@ export default function App() {
 
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${currentTab === 'minigame' ? 'minigame-active' : ''}`}>
       {/* 1. Golden embers background particles */}
       <ParticlesBg />
       
